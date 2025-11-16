@@ -128,39 +128,39 @@ var wkof = null;
 
       // didAnswerQuestion will be triggered whenever the user answers a question
       window.addEventListener('didAnswerQuestion', () => {
-        console.log('didAnswerQuestion');
+        console.debug('didAnswerQuestion');
 
         // Only display pitch next to the question if the user enables it in the settings.
         if (wkof.settings.wanikani_pitch_info?.display_pitch_beside_question) {
           // Make sure that this is a vocab reading review
           if (!(wkItemInfo.currentState.on == 'review' && wkItemInfo.currentState.type == 'vocabulary' && wkItemInfo.currentState.under.includes('reading'))) {
-            console.log('Not vocab reading review. Ignoring.');
+            console.debug('Not vocab reading review. Ignoring.');
             return;
           }
 
           // Figure out whether the answer is correct. Don't display the pitch if the answer is wrong.
           const userAnswer = document.querySelector('#user-response')?.value?.trim();
           if (!wkItemInfo.currentState.reading.includes(userAnswer)) {
-            console.log('User answer is wrong. Not displaying pitch.');
+            console.debug('User answer is wrong. Not displaying pitch.');
             return;
           }
 
           // Locate the html element where we want to insert our pitch after
           let divQuestion = document.querySelector('div.character-header__characters');
           if (!divQuestion) {
-            console.log('Unable to locate divQuestion.');
+            console.error('Unable to locate divQuestion.');
             return;
           }
 
           // Check if pitch info has already been added to avoid duplicates
           if (divQuestion.querySelector('.question-pitch-display')) {
-            console.log('Pitch info already added. Ignoring.');
+            console.debug('Pitch info already added. Ignoring.');
             return;
           }
 
           // For each reading, add the pitch into the area next to the question
           for (const reading of wkItemInfo.currentState.reading) {
-            console.log(`reading: ${reading}`);
+            console.debug(`reading: ${reading}`);
             if (!reading) continue;
 
             // Create a white box in the question area
