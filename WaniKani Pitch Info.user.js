@@ -146,7 +146,7 @@ var wkof = null;
           }
 
           // Locate the html element where we want to insert our pitch after
-          let divQuestion = document.querySelector('.character-header__characters');
+          let divQuestion = document.querySelector('div.character-header__characters');
           if (!divQuestion) {
             console.log('Unable to locate divQuestion.');
             return;
