@@ -128,33 +128,33 @@ var wkof = null;
 
       // didAnswerQuestion will be triggered whenever the user answers a question
       window.addEventListener('didAnswerQuestion', () => {
-        console.log("didAnswerQuestion");
+        console.log('didAnswerQuestion');
 
         // Only display pitch next to the question if the user enables it in the settings.
         if (wkof.settings.wanikani_pitch_info?.display_pitch_beside_question) {
           // Make sure that this is a vocab reading review
-          if (!(wkItemInfo.currentState.on == "review" && wkItemInfo.currentState.type == "vocabulary" && wkItemInfo.currentState.under.includes("reading"))) {
+          if (!(wkItemInfo.currentState.on == 'review' && wkItemInfo.currentState.type == 'vocabulary' && wkItemInfo.currentState.under.includes('reading'))) {
             console.log('Not vocab reading review. Ignoring.');
             return;
           }
 
           // Figure out whether the answer is correct. Don't display the pitch if the answer is wrong.
-          const userAnswer = document.querySelector("#user-response")?.value?.trim();
+          const userAnswer = document.querySelector('#user-response')?.value?.trim();
           if (!wkItemInfo.currentState.reading.includes(userAnswer)) {
-            console.log("User answer is wrong. Not displaying pitch.");
+            console.log('User answer is wrong. Not displaying pitch.');
             return;
           }
 
           // Locate the html element where we want to insert our pitch after
-          let divQuestion = document.querySelector(".character-header__characters");
+          let divQuestion = document.querySelector('.character-header__characters');
           if (!divQuestion) {
-            console.log("Unable to locate divQuestion.");
+            console.log('Unable to locate divQuestion.');
             return;
           }
 
           // Check if pitch info has already been added to avoid duplicates
           if (divQuestion.querySelector('.question-pitch-display')) {
-            console.log("Pitch info already added. Ignoring.");
+            console.log('Pitch info already added. Ignoring.');
             return;
           }
 
@@ -164,11 +164,11 @@ var wkof = null;
             if (!reading) continue;
 
             // Create a white box in the question area
-            var divOuter = document.createElement("div");
+            var divOuter = document.createElement('div');
             divOuter.setAttribute('class', 'additional-content__content additional-content__content--open subject-section subject-section--reading subject-section--collapsible subject-section__subsection subject-readings-with-audio subject-readings-with-audio__item');
 
             // Create a div to store the reading
-            var divReading = document.createElement("div");
+            var divReading = document.createElement('div');
             divReading.setAttribute('class', 'reading-with-audio__reading question-pitch-display');
             divReading.setAttribute('lang', 'ja');
             divReading.innerHTML = `${reading}`;
