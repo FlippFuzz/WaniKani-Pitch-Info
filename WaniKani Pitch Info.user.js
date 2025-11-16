@@ -12,8 +12,8 @@
 // @resource     accents https://raw.githubusercontent.com/mifunetoshiro/kanjium/94473cd69598abf54cc338a0b89f190a6c02a01c/data/source_files/raw/accents.txt
 // @grant        GM_getResourceText
 // @grant        unsafeWindow
-// @downloadURL  https://update.greasyfork.org/scripts/31070/WaniKani%20Pitch%20Info.user.js
-// @updateURL    https://update.greasyfork.org/scripts/31070/WaniKani%20Pitch%20Info.meta.js
+// @downloadURL https://update.greasyfork.org/scripts/31070/WaniKani%20Pitch%20Info.user.js
+// @updateURL https://update.greasyfork.org/scripts/31070/WaniKani%20Pitch%20Info.meta.js
 // ==/UserScript==
 
 var wkof = null;
@@ -125,15 +125,38 @@ var wkof = null;
       // Injects pitch accent and reading into question area.
       // Pitch is only displayed when the user enters a correct reading
       window.wkPitchInfoScriptObjectsToRemove = [];
-      window.addEventListener('didAnswerQuestion', (ev) => {
+
+      // didAnswerQuestion will be triggered whenever the user answers a question
+      window.addEventListener('didAnswerQuestion', () => {
         console.log("didAnswerQuestion");
-        // didAnswerQuestion will be triggered whenever the user answers a question
-        if (wkof.settings.wanikani_pitch_info?.display_pitch_beside_question && ev.detail.questionType == 'reading' && ev.detail.results.action == 'pass') {
-          let divQuestion = document.querySelector("#turbo-body > div.quiz > div > div.character-header.character-header--vocabulary > div > div.qa-character-wrapper > div.character-header__characters");
-          if (!divQuestion) return;
+
+        // Only display pitch next to the question if the user enables it in the settings.
+        if (wkof.settings.wanikani_pitch_info?.display_pitch_beside_question) {
+          // Make sure that this is a vocab reading review
+          if (!(wkItemInfo.currentState.on == "review" && wkItemInfo.currentState.type == "vocabulary" && wkItemInfo.currentState.under.includes("reading"))) {
+            console.log('Not vocab reading review. Ignoring.');
+            return;
+          }
+
+          // Figure out whether the answer is correct. Don't display the pitch if the answer is wrong.
+          const userAnswer = document.querySelector("#user-response")?.value?.trim();
+          if (!wkItemInfo.currentState.reading.includes(userAnswer)) {
+            console.log("User answer is wrong. Not displaying pitch.");
+            return;
+          }
+
+          // Locate the html element where we want to insert our pitch after
+          let divQuestion = document.querySelector(".character-header__characters");
+          if (!divQuestion) {
+            console.log("Unable to locate divQuestion.");
+            return;
+          }
 
           // Check if pitch info has already been added to avoid duplicates
-          if (divQuestion.querySelector('.question-pitch-display')) return;
+          if (divQuestion.querySelector('.question-pitch-display')) {
+            console.log("Pitch info already added. Ignoring.");
+            return;
+          }
 
           // For each reading, add the pitch into the area next to the question
           for (const reading of wkItemInfo.currentState.reading) {
@@ -160,7 +183,7 @@ var wkof = null;
       })
 
       // Cleans up the objects that we inject into the question area
-      window.addEventListener('willShowNextQuestion', (ev) => {
+      window.addEventListener('willShowNextQuestion', () => {
         // willShowNextQuestion will be triggered whenever a new question is to be loaded
         // Register a callback here to clean up the pitches that we insert into the question area.
         window.wkPitchInfoScriptObjectsToRemove.forEach(pObject => {
